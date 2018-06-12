@@ -26,3 +26,9 @@ select * from links where task_id = "xxxxxxxxxx" and status_code <> 200
 -- get latest update time of each column by task id
 select purl, ptitle, max(sdate) from links where task_id = "xxxxxxxxxx" GROUP BY purl
 
+
+-- for suicchuan pub management console
+create table columns_updated (select channel_id,max(pub_date) as pub_date from document_info GROUP BY channel_id);
+
+select t.channel_id, parent_id, channel_name,pub_date from channel_info, columns_updated
+where channel_info.channel_id = columns_updated.channel_id;

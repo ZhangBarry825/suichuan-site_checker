@@ -58,7 +58,7 @@ def parse_url(url):
     error = "NA"
     try:
         if is_file(url):
-            rep = requests.head(url)
+            rep = requests.head(url, timeout=10, headers=headers)
             status_code = rep.status_code
             return doc, status_code, error
         else:

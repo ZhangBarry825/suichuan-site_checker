@@ -14,6 +14,8 @@ class PubChecker(LinkChecker):
     def _get_date(self, doc, link):
         # return format:xxxx-xx-xx
         sdate = "#"
+        if doc:
+            sdate = select(doc.xpath("//span[contains(text(),'发布日期')]/following-sibling::span/text()"))
         res = DATE_PATTERN.match(link)
         if res and len(res.groups()) > 0:
             sdate = res.groups()[0]
@@ -21,6 +23,16 @@ class PubChecker(LinkChecker):
         return sdate
 
     def _get_extra_links(self, doc, plink):
+        redirect_link = select(doc.xpath("/html/head/meta[@http-equiv='refresh']/@content"))
+        redirect_link = redirect_link.split("=")[-1].strip()
+        if redirect_link:
+            link = {}
+            url = url_padding(redirect_link, plink["url"])
+            link["url"] = url
+            link["title"] = plink["title"]
+            link["purl"] = plink["url"]
+            link["ptitle"] = plink["title"]
+            self.links.append(link.copy())
         links = doc.xpath('//script[contains(text(), "gkfs(")]')
         for l in links:
             content = select(l.xpath(".//text()")).replace("gkfs(", "").replace(")", "")
